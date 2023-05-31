@@ -6,7 +6,6 @@ on:
       - '**.md'
 env:
   IMAGE_NAME: telegrambot
-  IMAGE_VERSION: 0.0.${GITHUB_RUN_NUMBER}
 
 jobs:
   build:
@@ -38,11 +37,10 @@ jobs:
         run: echo ${{secrets.DO_API_TOKEN}} | docker login -u ${{secrets.DO_API_TOKEN}} --password-stdin ${{secrets.DO_REGISTRY}}
 
       - name: Build Docker Image
-        run: docker build -t ${IMAGE_NAME}:${IMAGE_VERSION} .
+        run: docker build -t ${IMAGE_NAME}:latest .
 
       - name: Push Docker Image
-        # TODO: Need to remove older version (or just use latest)
-        run: docker push ${IMAGE_NAME}:${IMAGE_VERSION}
+        run: docker push ${IMAGE_NAME}:latest
 
 #
 #  deploy:
