@@ -47,8 +47,9 @@ jobs:
       - name: Push Docker Image
         run: docker push ${IMAGE_TAG}
 
-  deploy:
-    runs-on: ubuntu-latest
-    container: //TODO find image
-    needs:
-      - package
+#
+#  deploy:
+#    runs-on: ubuntu-latest
+#    container: //TODO find image
+#    needs:
+#      - package
