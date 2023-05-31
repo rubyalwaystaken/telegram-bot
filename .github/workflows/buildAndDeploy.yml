@@ -1,0 +1,57 @@
+name: Build and Deployment Pipeline into Digital Ocean
+
+on:
+  push:
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: eclipse-temurin:17.0.7_7-jdk-alpine
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Build artefact
+        run: ./gradlew build
+
+      - name: Upload jar
+        uses: actions/upload-artifact@master
+        with:
+          name: telegram-bot-jar
+          path: build/libs/telegrambot.jar
+
+  package:
+    runs-on: ubuntu-latest
+    # if: ${{ github.ref == 'refs/heads/main' }}
+    needs: build
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        
+      - name: Download jar
+        uses: actions/download-artifact@master
+        with:
+          name: telegram-bot-jar
+
+      - name: Login to Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{secrets.DO_REGISTRY}}
+          username: ${{secrets.DO_API_TOKEN}}
+          password: ${{secrets.DO_API_TOKEN}}
+          logout: true
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          tags: telegrambot:latest
+          push: true
+#
+#  deploy:
+#    runs-on: ubuntu-latest
+#    container: //TODO find image
+#    needs:
+#      - package
