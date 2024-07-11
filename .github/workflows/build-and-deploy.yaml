@@ -50,15 +50,16 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_TOKEN }}
 
+      - uses: actions/checkout@v4
+
       - name: Download .jar
         uses: actions/download-artifact@master
         with:
           name: Package
 
-      - uses: actions/checkout@v4
-
       - name: Build and push
         run: |
+          echo "${PWD}"
           ls
           docker build -t ${{ secrets.REGISTRY_URL }}/telegram-bot:latest .
           docker push ${{ secrets.REGISTRY_URL }}/telegram-bot:latest
