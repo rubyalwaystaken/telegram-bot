@@ -30,9 +30,11 @@ class RollDispatcher : CommandDispatcher {
             .joinToString("")
 
     private fun generateResponseToStartingDigits(randomNumber: String): String {
+        val reversedNumber = randomNumber.reversed()
+
         val uninterruptedCount =
-            randomNumber
-                .takeWhile { it == randomNumber.first() }
+            reversedNumber
+                .takeWhile { it == reversedNumber.first() }
                 .length
 
         return when (uninterruptedCount) {
