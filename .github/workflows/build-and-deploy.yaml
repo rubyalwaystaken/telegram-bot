@@ -72,15 +72,18 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Deploy
-        run: |
-          ssh root@${{ secrets.VIRTUAL_MACHINE_IP }}
-          
-          container_id=$(docker ps --format "{{.ID}} {{.Names}}" | grep "telegram-bot" | awk '{print $1}')
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VIRTUAL_MACHINE_IP }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            container_id=$(docker ps --format "{{.ID}} {{.Names}}" | grep "telegram-bot" | awk '{print $1}')
 
-          if [ ! -z "$container_id" ]; then
-            docker stop "$container_id"
-            docker rm "$container_id"
-          fi
+            if [ ! -z "$container_id" ]; then
+              docker stop "$container_id"
+              docker rm "$container_id"
+            fi
 
-          docker pull ${{ secrets.REGISTRY_URL }}/telegram-bot:latest
-          docker run --name telegram-bot -e TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }} -d ${{ secrets.REGISTRY_URL }}/telegram-bot:latest
+            docker pull ${{ secrets.REGISTRY_URL }}/telegram-bot:latest
+            docker run --name telegram-bot -e TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }} -d ${{ secrets.REGISTRY_URL }}/telegram-bot:latest
